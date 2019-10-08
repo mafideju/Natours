@@ -1,9 +1,57 @@
 const fs = require('fs');
 
 const log = () => {
-  // const date = new Date().toLocaleString();
-  // const hour = new Date().toLocaleTimeString();
+  // const dayName = new Date().getDay();
+  // const month = new Date().getMonth();
+  // const dayMonth = new Date().getDate();
+  // const year = new Date().getFullYear();
+
+  // switch (dayName) {
+  //   case 0:
+  //     return 'Domingo'
+  //   case 1: 
+  //     return 'Segunda'
+  //   case 2: 
+  //     return 'Terça'
+  //   case 3: 
+  //     return 'Quarta'
+  //   case 4: 
+  //     return 'Quinta'
+  //   case 5: 
+  //     return 'Sexta'
+  //   case 6: 
+  //     return 'Sábado'
+  // }
+  // switch (month) {
+  //   case 0:
+  //     return 'Janeiro'
+  //   case 1:
+  //     return 'Fevereiro'
+  //   case 2:
+  //     return 'Março'
+  //   case 3:
+  //     return 'Abril'
+  //   case 4:
+  //     return 'Maio'
+  //   case 5:
+  //     return 'Junho'
+  //   case 6:
+  //     return 'Julho'
+  //   case 7:
+  //     return 'Agosto'
+  //   case 8:
+  //     return 'Setembro'
+  //   case 9:
+  //     return 'Outubro'
+  //   case 10:
+  //     return 'Novembro'
+  //   case 11:
+  //     return 'Dezembro'
+  // }
+
+
   return `Accessed at ${new Date().toUTCString()}. \n`;
+  // return `Acessado em ${dayName}, Dia ${dayMonth} de ${month} de ${year}. \n`;
 }
 
 fs.appendFileSync('./logs/log101.txt', log());
