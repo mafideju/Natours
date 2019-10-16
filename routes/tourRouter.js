@@ -1,11 +1,12 @@
 const express = require('express');
+
 const router = express.Router();
 const {
   getAllTours,
   createTour,
   getTourById,
   updateTour,
-  deleteTour
+  deleteTour,
 } = require('../controllers/tourController');
 
 
