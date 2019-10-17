@@ -17,7 +17,13 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((connection) => {
-    console.log('CoNNeCTaDOooO => ', connection.models);
+    console.log(
+      chalk.bgYellow.blue('\n>> Servidor ')
+    + chalk.bgYellow.white('MongoDB ')
+    + chalk.bgYellow.blue('Rodando ')
+    + chalk.bgYellow.red('@ Porta 27017 <<\n'),
+    );
+    console.log(connection.models);
   })
   .catch((err) => console.log('SERVER ERROR =>', err));
 
