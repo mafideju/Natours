@@ -3,20 +3,20 @@ const mongoose = require('mongoose');
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Tour Must Have a Name'],
+    required: [true, 'Cada Pacote Deve Ter um Nome'],
     unique: true,
   },
   duration: {
     type: Number,
-    required: [true, 'Tour Must Have a Duration'],
+    required: [true, 'Cada Pacote Deve Ter uma Duração em Dias'],
   },
   maxGroupSize: {
     type: Number,
-    required: [true, 'Tour Must Have a Group Size'],
+    required: [true, 'Cada Pacote Deve Ter um Tamanhopara o Grupo'],
   },
   difficulty: {
     type: String,
-    required: [true, 'Tour Must Have a Hardness'],
+    required: [true, 'Cada Pacote Deve Ter uma Dificuldade'],
   },
   ratingsAverage: {
     type: Number,
@@ -28,7 +28,7 @@ const tourSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: [true, 'Tour Must Have a Price'],
+    required: [true, 'Cada Pacote Deve Ter um Preço'],
   },
   priceDiscount: {
     type: Number,
