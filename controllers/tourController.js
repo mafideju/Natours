@@ -1,5 +1,19 @@
 const Tour = require('./../models/tourModel');
 
+exports.getCheaperTours = (req, res, next) => {
+  req.query.limit = '3';
+  req.query.sort = 'price';
+  req.query.fields = 'name,price';
+  next();
+};
+
+exports.getExpensiveTours = (req, res, next) => {
+  req.query.limit = '3';
+  req.query.sort = '-price';
+  req.query.fields = 'name,price';
+  next();
+};
+
 exports.getAllTours = async (req, res) => {
   try {
     // FILTER BASIC
@@ -17,6 +31,24 @@ exports.getAllTours = async (req, res) => {
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
+    }
+
+    // LIMIT
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+
+    // PAGINATION
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+      const newTour = await Tour.countDocuments();
+      if (skip > newTour) throw new Error('Esta página no ecziste...');
     }
 
     const tours = await query;

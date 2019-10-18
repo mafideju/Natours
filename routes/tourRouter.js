@@ -2,6 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 const {
+  getCheaperTours,
+  getExpensiveTours,
   getAllTours,
   createTour,
   getTourById,
@@ -9,6 +11,13 @@ const {
   deleteTour,
 } = require('../controllers/tourController');
 
+router
+  .route('/cheaper-tours')
+  .get(getCheaperTours, getAllTours);
+
+router
+  .route('/expensive-tours')
+  .get(getExpensiveTours, getAllTours);
 
 router
   .route('/')
