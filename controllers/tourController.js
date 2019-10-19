@@ -1,57 +1,15 @@
 const Tour = require('./../models/tourModel');
-
-exports.getCheaperTours = (req, res, next) => {
-  req.query.limit = '3';
-  req.query.sort = 'price';
-  req.query.fields = 'name,price';
-  next();
-};
-
-exports.getExpensiveTours = (req, res, next) => {
-  req.query.limit = '3';
-  req.query.sort = '-price';
-  req.query.fields = 'name,price';
-  next();
-};
+const APIFeatures = require('./../service/apifeatures');
 
 exports.getAllTours = async (req, res) => {
   try {
-    // FILTER BASIC
-    const queryObj = { ...req.query };
-    ['page', 'sort', 'limit', 'fields'].forEach((el) => delete queryObj[el]);
-    // FILTER ADV
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (query) => `$${query}`);
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limit()
+      .pagination();
 
-    let query = Tour.find(JSON.parse(queryStr));
-
-    // SORT
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    // LIMIT
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // PAGINATION
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).limit(limit);
-    if (req.query.page) {
-      const newTour = await Tour.countDocuments();
-      if (skip > newTour) throw new Error('Esta página no ecziste...');
-    }
-
-    const tours = await query;
+    const tours = await features.query;
 
     res.status(200).json({
       status: 'SUCCESS',
@@ -122,6 +80,102 @@ exports.deleteTour = async (req, res) => {
     res.status(204).json({
       status: 'SUCCESS',
       data: null,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'FAIL',
+      message: err,
+    });
+  }
+};
+
+exports.getCheaperTours = (req, res, next) => {
+  req.query.limit = '3';
+  req.query.sort = 'price';
+  req.query.fields = 'name,price';
+  next();
+};
+
+exports.getExpensiveTours = (req, res, next) => {
+  req.query.limit = '3';
+  req.query.sort = '-price';
+  req.query.fields = 'name,price';
+  next();
+};
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.0 } },
+      },
+      {
+        $group: {
+          // AGRUPAMENTO POR TIPO DE CAMPO
+          // _id: null,
+          // _id: '$difficulty',
+          _id: '$ratingsAverage',
+          qtytours: { $sum: 1 },
+          qtyRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+    res.status(200).json({
+      status: 'SUCCESS',
+      data: { stats },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'FAIL',
+      message: err,
+    });
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          toursByMonth: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $sort: { toursByMonth: -1 },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ]);
+    res.status(200).json({
+      status: 'SUCCESS',
+      data: { plan },
     });
   } catch (err) {
     res.status(400).json({

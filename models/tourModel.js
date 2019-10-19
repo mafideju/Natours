@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 const mongoose = require('mongoose');
 
 const tourSchema = new mongoose.Schema({
@@ -12,7 +13,7 @@ const tourSchema = new mongoose.Schema({
   },
   maxGroupSize: {
     type: Number,
-    required: [true, 'Cada Pacote Deve Ter um Tamanhopara o Grupo'],
+    required: [true, 'Cada Pacote Deve Ter um Tamanho para o Grupo'],
   },
   difficulty: {
     type: String,
@@ -53,7 +54,23 @@ const tourSchema = new mongoose.Schema({
     select: false,
   },
   startDates: [Date],
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
 });
+
+tourSchema
+  .virtual('durationWeeks')
+  .get(function () {
+    return this.duration / 7;
+  });
+
+tourSchema
+  .virtual('durationHours')
+  .get(function () {
+    return this.duration * 24;
+  });
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
