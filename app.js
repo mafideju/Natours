@@ -12,6 +12,13 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+app.all('*', (req, res) => {
+  res.status(404).json({
+    status: 'FAIL',
+    message: `Página ${req.originalUrl} Não Encontrada.`,
+  });
+});
 // app.use(express.static(`${__dirname}/public`));
 
 module.exports = app;

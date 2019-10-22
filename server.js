@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ /* eslint-disable no-console */
 require('dotenv').config({ path: './config.env' });
 require('./logs/logger');
 const mongoose = require('mongoose');
@@ -17,6 +17,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((connection) => {
+    debugger
     console.log(
       chalk.bgYellow.blue('\n>> Servidor ')
     + chalk.bgYellow.white('MongoDB ')
