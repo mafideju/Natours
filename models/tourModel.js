@@ -98,7 +98,10 @@ tourSchema
 // DOCUMENT MIDDLEWARE ** SAVE OR CREATE **
 tourSchema
   .pre('save', function (next) {
-    this.slug = slugify(this.name, { lower: true });
+    this.slug = slugify(this.name, {
+      lower: true,
+      remove: /[*+~.()'"!:@]/g,
+    });
     next();
   });
 
@@ -119,5 +122,3 @@ tourSchema
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
-
-// https://www.xnxx.com/video-ucx0na9/family_brasil_swing_submissa_mae
