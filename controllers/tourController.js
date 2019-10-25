@@ -1,7 +1,9 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../service/apifeatures');
 const catchAsync = require('./../service/catchAsync');
+const AppError = require('./../service/AppError');
 
 exports.getAllTours = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Tour.find(), req.query)
@@ -21,6 +23,9 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 
 exports.getTourById = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
+  if (!tour) {
+    return next(new AppError('Não encontramos nenhum pacote com este ID para mostrar', 404));
+  }
   res.status(200).json({
     status: 'SUCCESS',
     data: { tour },
@@ -43,6 +48,9 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
+  if (!tour) {
+    return next(new AppError('Não encontramos nenhum pacote com este ID para atualizar', 404));
+  }
   res.status(200).json({
     status: 'SUCCESS',
     data: { tour },
@@ -50,7 +58,10 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+  if (!tour) {
+    return next(new AppError('Não encontramos nenhum pacote com este ID para deletar', 404));
+  }
   res.status(204).json({
     status: 'SUCCESS',
     data: null,
