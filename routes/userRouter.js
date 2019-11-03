@@ -1,13 +1,18 @@
 const express = require('express');
-
-const router = express.Router();
 const {
   getAllUsers,
   createUser,
   getUserById,
   updateUser,
   deleteUser,
-} = require('../controllers/userController');
+} = require('./../controllers/userController');
+const { signup } = require('./../controllers/authController');
+const catchAsync = require('./../service/catchAsync');
+
+const router = express.Router();
+
+router
+  .post('/signup', catchAsync(signup));
 
 router
   .route('/')

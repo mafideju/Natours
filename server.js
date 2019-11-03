@@ -17,7 +17,6 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((connection) => {
-    debugger
     console.log(
       chalk.bgYellow.blue('\n>> Servidor ')
     + chalk.bgYellow.white('MongoDB ')
