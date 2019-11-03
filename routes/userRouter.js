@@ -6,13 +6,16 @@ const {
   updateUser,
   deleteUser,
 } = require('./../controllers/userController');
-const { signup } = require('./../controllers/authController');
+const { signup, login } = require('./../controllers/authController');
 const catchAsync = require('./../service/catchAsync');
 
 const router = express.Router();
 
 router
   .post('/signup', catchAsync(signup));
+
+router
+  .post('/login', catchAsync(login));
 
 router
   .route('/')

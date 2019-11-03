@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Usuário Deve Cadastrar Uma Senha com 6 Caracteres no Minimo'],
     minlength: 6,
+    select: false,
+    validate(password) {
+      if (
+        password.includes('password')
+      || password.includes('123456')
+      || password.includes('000000')
+      ) throw new Error('Senha Manjada. Tente Outra.');
+    },
   },
   passwordConfirm: {
     type: String,
@@ -46,6 +54,11 @@ userSchema
     this.passwordConfirm = undefined;
     next();
   });
+
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+  const comparation = await bcrypt.compare(candidatePassword, userPassword);
+  return comparation;
+};
 
 const User = mongoose.model('User', userSchema);
 
