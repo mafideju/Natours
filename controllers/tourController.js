@@ -2,8 +2,9 @@
 /* eslint-disable no-unused-vars */
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../service/apifeatures');
-const catchAsync = require('./../service/catchAsync');
 const AppError = require('./../service/AppError');
+const catchAsync = require('./../service/catchAsync');
+
 
 exports.getAllTours = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Tour.find(), req.query)
@@ -21,7 +22,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getTourById = catchAsync(async (req, res, next) => {
+exports.getTourById = async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
   if (!tour) {
     return next(new AppError('Não encontramos nenhum pacote com este ID para mostrar', 404));
@@ -30,10 +31,10 @@ exports.getTourById = catchAsync(async (req, res, next) => {
     status: 'SUCCESS',
     data: { tour },
   });
-});
+};
 
 // eslint-disable-next-line no-unused-vars
-exports.createTour = catchAsync(async (req, res, next) => {
+exports.createTour = async (req, res, next) => {
   const newTour = await Tour.create(req.body);
   res.status(201).json({
     status: 'SUCCESS',
@@ -41,9 +42,9 @@ exports.createTour = catchAsync(async (req, res, next) => {
       tour: newTour,
     },
   });
-});
+};
 
-exports.updateTour = catchAsync(async (req, res, next) => {
+exports.updateTour = async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -55,9 +56,9 @@ exports.updateTour = catchAsync(async (req, res, next) => {
     status: 'SUCCESS',
     data: { tour },
   });
-});
+};
 
-exports.deleteTour = catchAsync(async (req, res, next) => {
+exports.deleteTour = async (req, res, next) => {
   const tour = await Tour.findByIdAndDelete(req.params.id);
   if (!tour) {
     return next(new AppError('Não encontramos nenhum pacote com este ID para deletar', 404));
@@ -66,7 +67,7 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
     status: 'SUCCESS',
     data: null,
   });
-});
+};
 
 exports.getCheaperTours = (req, res, next) => {
   req.query.limit = '3';
@@ -82,7 +83,7 @@ exports.getExpensiveTours = (req, res, next) => {
   next();
 };
 
-exports.getTourStats = catchAsync(async (req, res, next) => {
+exports.getTourStats = async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.0 } },
@@ -109,9 +110,9 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
     status: 'SUCCESS',
     data: { stats },
   });
-});
+};
 
-exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
+exports.getMonthlyPlan = async (req, res, next) => {
   const year = req.params.year * 1;
   const plan = await Tour.aggregate([
     {
@@ -148,4 +149,4 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     status: 'SUCCESS',
     data: { plan },
   });
-});
+};

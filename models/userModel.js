@@ -40,6 +40,9 @@ const userSchema = new mongoose.Schema({
       message: 'Senhas Devem Ser Iguais',
     },
   },
+  passwordChangedAt: {
+    type: Date,
+  },
   photo: {
     type: String,
     trim: true,
@@ -58,6 +61,16 @@ userSchema
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
   const comparation = await bcrypt.compare(candidatePassword, userPassword);
   return comparation;
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    // eslint-disable-next-line no-console
+    console.log('passwordChangedAt', this.passwordChangedAt, JWTTimestamp);
+    return JWTTimestamp < changedTimeStamp;
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

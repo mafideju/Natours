@@ -1,6 +1,4 @@
 const express = require('express');
-
-const router = express.Router();
 const {
   getAllTours,
   createTour,
@@ -12,17 +10,21 @@ const {
   getTourStats,
   getMonthlyPlan,
 } = require('../controllers/tourController');
+const { protect } = require('./../controllers/authController.js');
+const catchAsync = require('./../service/catchAsync');
+
+const router = express.Router();
 
 router
   .route('/')
-  .get(getAllTours)
-  .post(createTour);
+  .get(protect, getAllTours)
+  .post(catchAsync(createTour));
 
 router
   .route('/:id')
-  .get(getTourById)
-  .patch(updateTour)
-  .delete(deleteTour);
+  .get(catchAsync(getTourById))
+  .patch(catchAsync(updateTour))
+  .delete(catchAsync(deleteTour));
 
 router
   .route('/cheaper-tours')
@@ -34,10 +36,10 @@ router
 
 router
   .route('/stats')
-  .get(getTourStats);
+  .get(catchAsync(getTourStats));
 
 router
   .route('/plans/:year')
-  .get(getMonthlyPlan);
+  .get(catchAsync(getMonthlyPlan));
 
 module.exports = router;
