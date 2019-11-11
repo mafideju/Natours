@@ -82,9 +82,18 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 4 => CHECAR SE O USER ALTEROU PASSWORD (USERMODEL)
   if (freshUser.changedPasswordAfter(decodedData.iat)) {
-    return next(new AppError('Password Mudou. Log Novamente.', 401));
+    return next(new AppError('Password Mudou. Login Novamente.', 401));
   }
 
   req.user = freshUser;
   next();
 });
+
+exports.restrict = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return next(
+      new AppError('Para acessar este recurso é necessária a permissão de administrador', 403),
+    );
+  }
+  next();
+};

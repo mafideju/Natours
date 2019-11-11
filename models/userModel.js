@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: [validator.isEmail, 'Usuário Deve Ter Um Email Válido'],
   },
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Usuário Deve Cadastrar Uma Senha com 6 Caracteres no Minimo'],
@@ -58,20 +63,24 @@ userSchema
     next();
   });
 
-userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
-  const comparation = await bcrypt.compare(candidatePassword, userPassword);
-  return comparation;
-};
+userSchema
+  .methods
+  .correctPassword = async function (candidatePassword, userPassword) {
+    const comparation = await bcrypt.compare(candidatePassword, userPassword);
+    return comparation;
+  };
 
-userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-  if (this.passwordChangedAt) {
-    const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
-    // eslint-disable-next-line no-console
-    console.log('passwordChangedAt', this.passwordChangedAt, JWTTimestamp);
-    return JWTTimestamp < changedTimeStamp;
-  }
-  return false;
-};
+userSchema
+  .methods
+  .changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangedAt) {
+      const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+      // eslint-disable-next-line no-console
+      console.log('passwordChangedAt', this.passwordChangedAt, JWTTimestamp);
+      return JWTTimestamp < changedTimeStamp;
+    }
+    return false;
+  };
 
 const User = mongoose.model('User', userSchema);
 

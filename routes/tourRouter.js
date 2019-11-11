@@ -9,22 +9,22 @@ const {
   getExpensiveTours,
   getTourStats,
   getMonthlyPlan,
-} = require('../controllers/tourController');
-const { protect } = require('./../controllers/authController.js');
+} = require('./../controllers/tourController');
+const { protect, restrict } = require('./../controllers/authController');
 const catchAsync = require('./../service/catchAsync');
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(protect, getAllTours)
-  .post(catchAsync(createTour));
+  .get(getAllTours)
+  .post(protect, createTour);
 
 router
   .route('/:id')
-  .get(catchAsync(getTourById))
-  .patch(catchAsync(updateTour))
-  .delete(catchAsync(deleteTour));
+  .get(getTourById)
+  .patch(protect, updateTour)
+  .delete(protect, restrict('admin', 'lead-guide'), deleteTour);
 
 router
   .route('/cheaper-tours')
