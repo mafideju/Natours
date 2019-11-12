@@ -6,16 +6,24 @@ const {
   updateUser,
   deleteUser,
 } = require('./../controllers/userController');
-const { signup, login } = require('./../controllers/authController');
-const catchAsync = require('./../service/catchAsync');
+const {
+  signup,
+  login,
+  forgotPassword,
+  resetPassword,
+} = require('./../controllers/authController');
+// const catchAsync = require('./../service/catchAsync');
 
 const router = express.Router();
 
 router
-  .post('/signup', catchAsync(signup));
-
+  .post('/signup', signup);
 router
-  .post('/login', catchAsync(login));
+  .post('/login', login);
+router
+  .post('/forgotPassword', forgotPassword);
+router
+  .patch('/resetPassword/:token', resetPassword);
 
 router
   .route('/')
