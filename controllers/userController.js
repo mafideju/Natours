@@ -1,4 +1,6 @@
 const User = require('./../models/userModel');
+const AppError = require('./../service/AppError');
+const catchAsync = require('./../service/catchAsync');
 
 exports.getAllUsers = async (req, res) => {
   const users = await User.find();
@@ -79,3 +81,39 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+exports.updateCurrentUser = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError('Não use esta rota para atualizar a senha.', 400),
+    );
+  }
+
+  const filterObj = (obj, ...allowedFields) => {
+    const newObj = {};
+    Object.keys(obj).forEach((field) => {
+      if (allowedFields.includes(field)) {
+        newObj[field] = obj[field];
+      } else {
+        next(
+          new AppError('Você está atualizando um campo não permitido', 400),
+        );
+      }
+    });
+    return newObj;
+  };
+
+  const filteredData = filterObj(req.body, 'username', 'email');
+
+  const updateUserData = await User.findByIdAndUpdate(req.user.id, filteredData, {
+    new: true,
+    runValidators: true,
+  });
+
+  res
+    .status(200)
+    .json({
+      status: 'SUCCESS',
+      data: { user: updateUserData },
+    });
+});

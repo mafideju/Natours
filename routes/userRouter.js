@@ -11,7 +11,10 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  updatePassword,
+  protect,
 } = require('./../controllers/authController');
+const { updateCurrentUser } = require('./../controllers/userController');
 // const catchAsync = require('./../service/catchAsync');
 
 const router = express.Router();
@@ -24,6 +27,10 @@ router
   .post('/forgotPassword', forgotPassword);
 router
   .patch('/resetPassword/:token', resetPassword);
+router
+  .patch('/updatePassword', protect, updatePassword);
+router
+  .patch('/updateCurrentUser', protect, updateCurrentUser);
 
 router
   .route('/')

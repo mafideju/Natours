@@ -159,3 +159,29 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
       token,
     });
 });
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // GET USER FROM COLLECTION
+  const user = await User.findById(req.user.id).select('+password');
+
+  // CHECK PASSWORDS
+  if (!(await user.correctPassword(req.body.passwordConfirm, user.password))) {
+    return next(
+      new AppError('Senhas Não Conferem. Tente Novamente.', 401),
+    );
+  }
+
+  // update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // Log In User
+  const token = signToken(user._id);
+  res
+    .status(201)
+    .json({
+      status: 'SUCCESS',
+      token,
+    });
+});
