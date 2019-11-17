@@ -5,6 +5,8 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  updateCurrentUser,
+  deleteCurrentUser,
 } = require('./../controllers/userController');
 const {
   signup,
@@ -14,7 +16,6 @@ const {
   updatePassword,
   protect,
 } = require('./../controllers/authController');
-const { updateCurrentUser } = require('./../controllers/userController');
 // const catchAsync = require('./../service/catchAsync');
 
 const router = express.Router();
@@ -31,6 +32,8 @@ router
   .patch('/updatePassword', protect, updatePassword);
 router
   .patch('/updateCurrentUser', protect, updateCurrentUser);
+router
+  .delete('/deleteCurrentUser', protect, deleteCurrentUser);
 
 router
   .route('/')

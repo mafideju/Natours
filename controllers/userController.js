@@ -117,3 +117,14 @@ exports.updateCurrentUser = catchAsync(async (req, res, next) => {
       data: { user: updateUserData },
     });
 });
+
+exports.deleteCurrentUser = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res
+    .status(204)
+    .json({
+      status: 'SUCCESS',
+      data: null,
+    });
+});
