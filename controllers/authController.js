@@ -11,6 +11,23 @@ const sendEmail = require('./../service/eMail');
 const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, {
   expiresIn: process.env.JWT_EXPIRES,
 });
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
+  user.password = undefined;
+  res.status(statusCode).json({
+    status: 'SUCCESS',
+    token,
+    data: { user },
+  });
+};
 
 exports.signup = catchAsync(async (req, res) => {
   const newUser = await User.create({
@@ -19,18 +36,7 @@ exports.signup = catchAsync(async (req, res) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
-
-  const token = signToken(newUser._id);
-
-  res
-    .status(201)
-    .json({
-      status: 'SUCCESS',
-      token,
-      data: {
-        user: newUser,
-      },
-    });
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -48,16 +54,10 @@ exports.login = catchAsync(async (req, res, next) => {
   const correct = await user
     .correctPassword(password, user.password);
 
-  const token = signToken(user.id);
   if (!user || !correct) {
     return next(new AppError('Usuário ou Senha Incorretos. Tente Novamente!', 401));
   }
-  res
-    .status(200)
-    .json({
-      status: 'SUCCESS',
-      token,
-    });
+  createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
