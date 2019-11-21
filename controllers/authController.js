@@ -18,9 +18,12 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
     ),
     httpOnly: true,
+    secure: false,
   };
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-  res.cookie('jwt', token, cookieOptions);
+  res
+    .cookie('jwt', token, cookieOptions);
+  // eslint-disable-next-line no-param-reassign
   user.password = undefined;
   res.status(statusCode).json({
     status: 'SUCCESS',
@@ -151,13 +154,14 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
 
-  const token = signToken(user._id);
-  res
-    .status(200)
-    .json({
-      status: 'SUCCESS',
-      token,
-    });
+  // const token = signToken(user._id);
+  // res
+  //   .status(200)
+  //   .json({
+  //     status: 'SUCCESS',
+  //     token,
+  //   });
+  createSendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -177,11 +181,12 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // Log In User
-  const token = signToken(user._id);
-  res
-    .status(201)
-    .json({
-      status: 'SUCCESS',
-      token,
-    });
+  // const token = signToken(user._id);
+  // res
+  //   .status(201)
+  //   .json({
+  //     status: 'SUCCESS',
+  //     token,
+  //   });
+  createSendToken(user, 201, res);
 });
