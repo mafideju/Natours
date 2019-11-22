@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -11,6 +12,12 @@ const userRouter = require('./routes/userRouter');
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('common'));
 }
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Muitas solicitações da mesma origem. Tente novamente em uma hora.',
+});
+app.use('/api', limiter);
 app.use((req, res, next) => {
   // req.requestTime = new Date().toISOString();
   // console.log('HEADERS => ', req.headers);
