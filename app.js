@@ -28,7 +28,7 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.all('*', (req, res, next) => {
-  next(new AppError(`NOT FOUND => Página ${req.originalUrl} Não Encontrada.`));
+  next(new AppError(`404 - |NOT FOUND| => Página ${req.originalUrl} Não Encontrada.`));
 });
 
 app.use(errorHandler);
